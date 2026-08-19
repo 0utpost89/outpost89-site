@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OUTPOST 89 — BROADCASTING</title>
-  <meta name="description" content="Outpost 89 — One bloke. One project at a time. Tech builds, tinkering, and figuring it out as I go." />
+  <title>OUTPOST 89 — SIGNAL</title>
+  <meta name="description" content="Outpost 89 — web tools, dispatches, and projects from one bloke figuring it out as he goes." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet" />
   <style>
@@ -324,57 +324,46 @@
       color: var(--text-dim);
     }
 
-    /* ==================== VIDEOS ==================== */
-    #videos { padding-bottom: 3rem; }
+    /* ==================== TOOLS ==================== */
+    #tools { padding-bottom: 3rem; }
 
-    .video-grid {
+    .tools-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
     }
 
-    .video-card {
+    @media (max-width: 640px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+
+    .tool-card {
+      display: block;
       border: 2px solid var(--surface-light);
       background: var(--surface);
-      transition: border-color 0.3s, box-shadow 0.3s;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
     }
 
-    .video-card:hover {
+    .tool-card:hover {
       border-color: var(--purple-dim);
       box-shadow: 0 0 20px var(--purple-glow);
+      transform: translateY(-2px);
     }
 
-    .video-embed {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-    }
-
-    .video-embed iframe {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border: none;
-    }
-
-    .video-info {
-      padding: 1rem 1.2rem;
-    }
-
-    .video-title {
+    .tool-title {
       font-family: 'VT323', monospace;
       font-size: 1.3rem;
       color: var(--text-bright);
       margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
     }
 
-    .video-meta {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-    }
-
-    .video-tag {
+    .tool-tag {
       display: inline-block;
       font-family: 'Press Start 2P', cursive;
       font-size: 0.4rem;
@@ -382,17 +371,82 @@
       color: var(--text-bright);
       padding: 3px 8px;
       letter-spacing: 1px;
-      margin-left: 0.5rem;
       vertical-align: middle;
     }
 
-    .video-placeholder {
-      padding: 3rem 1.5rem;
-      text-align: center;
-      border: 2px dashed var(--surface-light);
+    .tool-desc {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-dim);
+      margin-bottom: 0.8rem;
+    }
+
+    .tool-cta {
+      font-family: 'VT323', monospace;
+      font-size: 0.95rem;
+      color: var(--purple-bright);
+      letter-spacing: 1px;
+    }
+
+    /* ==================== REDDIT ==================== */
+    #reddit { padding-bottom: 3rem; }
+
+    .reddit-card {
+      display: block;
+      border: 2px solid var(--surface-light);
+      background: var(--surface);
+      padding: 1.2rem 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .reddit-card:hover {
+      border-color: var(--purple-dim);
+      box-shadow: 0 0 20px var(--purple-glow);
+    }
+
+    .reddit-title {
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      color: var(--text-bright);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .reddit-tag {
+      display: inline-block;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.35rem;
+      background: var(--amber);
+      color: var(--bg-deep);
+      padding: 3px 8px;
+      letter-spacing: 1px;
+      vertical-align: middle;
+    }
+
+    .reddit-meta {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .reddit-cta {
+      font-family: 'VT323', monospace;
+      font-size: 1rem;
+      color: var(--purple-bright);
+      letter-spacing: 1px;
+    }
+
+    .reddit-loading {
       color: var(--text-dim);
       font-family: 'VT323', monospace;
-      font-size: 1.1rem;
+      font-size: 1rem;
     }
 
     /* ==================== SUBSTACK NOTE ==================== */
@@ -532,7 +586,7 @@
 
     .signal-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
     }
 
@@ -683,7 +737,8 @@
           <span class="dot"></span> OUTPOST 89
         </a>
         <ul class="nav-links">
-          <li><a href="#videos">Videos</a></li>
+          <li><a href="#tools">Tools</a></li>
+          <li><a href="#dispatch">Dispatch</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#signal">Signal</a></li>
         </ul>
@@ -699,7 +754,7 @@
         </div>
 
         <div class="hero-status">
-          <span class="blink">■</span> NOW BROADCASTING
+          <span class="blink">■</span> SIGNAL ACTIVE
         </div>
 
         <h1>OUTPOST <span class="num">89</span></h1>
@@ -707,19 +762,19 @@
         <div class="hero-tagline">One bloke. One project at a time.</div>
 
         <p class="hero-desc">
-          I like building things and figuring them out as I go.
-          Sometimes that's tech, sometimes it's not &mdash;
-          but there's always a project on the go.
+          I build small web tools to solve my own problems, then put them
+          out here in case they're useful to someone else too.
+          Whatever's next, it'll probably show up on this page.
         </p>
 
         <div class="dashboard">
           <div class="dash-item">
-            <span class="label">FORMAT</span><br />
-            <span class="value">LONG-FORM</span>
+            <span class="label">TOOLS LIVE</span><br />
+            <span class="value">4</span>
           </div>
           <div class="dash-item">
-            <span class="label">CADENCE</span><br />
-            <span class="value">WEEKLY</span>
+            <span class="label">STATUS</span><br />
+            <span class="value green">BUILDING</span>
           </div>
           <div class="dash-item">
             <span class="label">VIBE</span><br />
@@ -730,61 +785,36 @@
       </div>
     </section>
 
-    <!-- VIDEOS -->
-    <section id="videos">
+    <!-- TOOLS -->
+    <section id="tools">
       <div class="container">
-        <div class="section-label">Latest Transmissions</div>
+        <div class="section-label">Tools I've Built</div>
 
-        <div class="video-grid">
+        <div class="tools-grid">
 
-          <!-- VIDEO 1 — Replace the YouTube ID below -->
-          <!--
-            To add a real video:
-            1. Replace VIDEO_ID_HERE with your YouTube video ID
-            2. Update the title and meta text
-            Example ID: dQw4w9WgXcQ
-          -->
-          <div class="video-card reveal">
-            <div class="video-placeholder">
-              <p>[ FIRST TRANSMISSION INCOMING ]</p>
-              <p style="margin-top:0.5rem; color:var(--purple);">Building My First Gaming PC at 36</p>
-            </div>
-            <div class="video-info">
-              <div class="video-title">Building My First Gaming PC at 36 <span class="video-tag">PROJECT</span></div>
-              <div class="video-meta">Coming soon</div>
-            </div>
-          </div>
+          <a href="https://0utpost89.github.io/eldforge" target="_blank" rel="noopener" class="tool-card reveal">
+            <div class="tool-title">Eldforge <span class="tool-tag">FITNESS</span></div>
+            <p class="tool-desc">A personal workout tracker &mdash; set up the equipment you've got and it builds your exercise pool around it, plate calculator included.</p>
+            <div class="tool-cta">LAUNCH TOOL &rarr;</div>
+          </a>
 
-          <!-- VIDEO 2 — Placeholder -->
-          <div class="video-card reveal">
-            <div class="video-placeholder">
-              <p>[ STANDBY ]</p>
-            </div>
-            <div class="video-info">
-              <div class="video-title">Next transmission pending... <span class="video-tag">TBD</span></div>
-              <div class="video-meta">Stay tuned</div>
-            </div>
-          </div>
+          <a href="https://aldi-shopping-list.netlify.app" target="_blank" rel="noopener" class="tool-card reveal">
+            <div class="tool-title">Weekly Shop Planner <span class="tool-tag">HOME</span></div>
+            <p class="tool-desc">Plan meals and household essentials across the week, then generate a single Aldi-formatted shopping list.</p>
+            <div class="tool-cta">LAUNCH TOOL &rarr;</div>
+          </a>
 
-          <!--
-            === HOW TO ADD A NEW VIDEO ===
-            Copy this block, replace VIDEO_ID_HERE with your YouTube ID:
+          <a href="https://f34massconverter.netlify.app" target="_blank" rel="noopener" class="tool-card reveal">
+            <div class="tool-title">Avtur F34 FSII Calculator <span class="tool-tag">AVIATION</span></div>
+            <p class="tool-desc">Converts between mass and volume for aviation fuel, with temperature density corrections to JSP 317 standards.</p>
+            <div class="tool-cta">LAUNCH TOOL &rarr;</div>
+          </a>
 
-            <div class="video-card reveal">
-              <div class="video-embed">
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_HERE"
-                  title="Video title"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                ></iframe>
-              </div>
-              <div class="video-info">
-                <div class="video-title">Your Video Title <span class="video-tag">PROJECT</span></div>
-                <div class="video-meta">2026 · outpost 89</div>
-              </div>
-            </div>
-          -->
+          <a href="https://chucknorrismeme.netlify.app" target="_blank" rel="noopener" class="tool-card reveal">
+            <div class="tool-title">Chuck Norris Facts <span class="tool-tag">JUST FOR FUN</span></div>
+            <p class="tool-desc">A roundhouse-kick button that cycles through absurd, exaggerated Chuck Norris facts. No purpose. Fully committed to the bit.</p>
+            <div class="tool-cta">LAUNCH TOOL &rarr;</div>
+          </a>
 
         </div>
       </div>
@@ -819,6 +849,16 @@
       </div>
     </section>
 
+    <!-- REDDIT -->
+    <section id="reddit">
+      <div class="container">
+        <div class="section-label">Latest From Reddit</div>
+        <div id="reddit-card-container">
+          <div class="reddit-loading">Tuning in...</div>
+        </div>
+      </div>
+    </section>
+
     <!-- ABOUT -->
     <section id="about">
       <div class="container">
@@ -829,13 +869,14 @@
 
           <p>
             I'm Paul. I like building things and figuring them out as I go.
-            This is where I document the projects I'm working on.
+            This is where I put the tools I've made &mdash; mostly small web
+            apps built to solve a problem I actually had.
           </p>
 
           <p>
-            A gaming PC I'd never built before. An AI assistant running on my own hardware.
-            A home cinema setup that doesn't need a single subscription.
-            Whatever's next, I'll probably make a video about it.
+            A workout tracker. A shopping list planner. A calculator for
+            something niche and work-related. If it's useful enough that I
+            keep reaching for it myself, it ends up here.
           </p>
 
           <p>
@@ -843,7 +884,7 @@
           </p>
 
           <p>
-            New video every week. <strong>Get in touch:</strong>
+            <strong>Get in touch:</strong>
             <a href="mailto:outpost89yt@outlook.com" style="color:var(--amber); text-decoration:none;">outpost89yt@outlook.com</a>
           </p>
         </div>
@@ -856,12 +897,6 @@
         <div class="section-label">Find the Signal</div>
 
         <div class="signal-grid">
-
-          <a href="https://youtube.com/@outpost89" target="_blank" rel="noopener" class="signal-link reveal">
-            <div class="signal-icon">YT</div>
-            <span class="signal-name">YOUTUBE</span>
-            <span class="signal-handle">@outpost89</span>
-          </a>
 
           <a href="https://substack.com/@outpost89" target="_blank" rel="noopener" class="signal-link reveal">
             <div class="signal-icon">SS</div>
@@ -932,6 +967,49 @@
       }, { threshold: 0.15 });
 
       reveals.forEach(el => observer.observe(el));
+    })();
+
+    /* === LATEST REDDIT POST === */
+    (function() {
+      const container = document.getElementById('reddit-card-container');
+      const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[c]);
+      const fallback = () => {
+        container.innerHTML = `
+          <a href="https://reddit.com/user/outpost89" target="_blank" rel="noopener" class="reddit-card reveal visible">
+            <div class="reddit-title">Couldn't load the latest post <span class="reddit-tag">REDDIT</span></div>
+            <div class="reddit-meta">
+              <span>Reddit's being cagey right now</span>
+              <span class="reddit-cta">VISIT PROFILE &rarr;</span>
+            </div>
+          </a>`;
+      };
+
+      fetch('https://www.reddit.com/user/outpost89/submitted.json?limit=1&sort=new')
+        .then(res => {
+          if (!res.ok) throw new Error('bad response');
+          return res.json();
+        })
+        .then(data => {
+          const post = data && data.data && data.data.children && data.data.children[0] && data.data.children[0].data;
+          if (!post) throw new Error('no post found');
+
+          const url = 'https://reddit.com' + post.permalink;
+          const date = new Date(post.created_utc * 1000).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+          const subreddit = escapeHtml(post.subreddit_name_prefixed || 'r/outpost89');
+          const title = escapeHtml(post.title || 'Untitled post');
+
+          container.innerHTML = `
+            <a href="${url}" target="_blank" rel="noopener" class="reddit-card reveal visible">
+              <div class="reddit-title">${title} <span class="reddit-tag">${subreddit}</span></div>
+              <div class="reddit-meta">
+                <span>${date}</span>
+                <span class="reddit-cta">READ ON REDDIT &rarr;</span>
+              </div>
+            </a>`;
+        })
+        .catch(fallback);
     })();
   </script>
 </body>
