@@ -969,39 +969,57 @@
       reveals.forEach(el => observer.observe(el));
     })();
 
-    /* === LATEST REDDIT POST === */
+    /* === LATEST REDDIT POST ===
+       Reddit blocks direct browser requests (CORS), so a GitHub Action
+       fetches this server-side every few hours and writes reddit-latest.json.
+       This just reads that local file. */
     (function() {
       const container = document.getElementById('reddit-card-container');
       const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       })[c]);
-      const fallback = () => {
+
+      const showFallback = () => {
         container.innerHTML = `
           <a href="https://reddit.com/user/outpost89" target="_blank" rel="noopener" class="reddit-card reveal visible">
             <div class="reddit-title">Couldn't load the latest post <span class="reddit-tag">REDDIT</span></div>
             <div class="reddit-meta">
-              <span>Reddit's being cagey right now</span>
+              <span>Try the profile directly</span>
               <span class="reddit-cta">VISIT PROFILE &rarr;</span>
             </div>
           </a>`;
       };
 
-      fetch('https://www.reddit.com/user/outpost89/submitted.json?limit=1&sort=new')
+      const showEmpty = () => {
+        container.innerHTML = `
+          <a href="https://reddit.com/user/outpost89" target="_blank" rel="noopener" class="reddit-card reveal visible">
+            <div class="reddit-title">No posts yet <span class="reddit-tag">REDDIT</span></div>
+            <div class="reddit-meta">
+              <span>Check back soon</span>
+              <span class="reddit-cta">VISIT PROFILE &rarr;</span>
+            </div>
+          </a>`;
+      };
+
+      fetch('reddit-latest.json', { cache: 'no-store' })
         .then(res => {
           if (!res.ok) throw new Error('bad response');
           return res.json();
         })
         .then(data => {
-          const post = data && data.data && data.data.children && data.data.children[0] && data.data.children[0].data;
-          if (!post) throw new Error('no post found');
+          if (!data || !data.title || !data.url) {
+            showEmpty();
+            return;
+          }
 
-          const url = 'https://reddit.com' + post.permalink;
-          const date = new Date(post.created_utc * 1000).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
-          const subreddit = escapeHtml(post.subreddit_name_prefixed || 'r/outpost89');
-          const title = escapeHtml(post.title || 'Untitled post');
+          const date = data.updated
+            ? new Date(data.updated).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
+            : '';
+          const subreddit = escapeHtml(data.subreddit || 'r/outpost89');
+          const title = escapeHtml(data.title);
 
           container.innerHTML = `
-            <a href="${url}" target="_blank" rel="noopener" class="reddit-card reveal visible">
+            <a href="${data.url}" target="_blank" rel="noopener" class="reddit-card reveal visible">
               <div class="reddit-title">${title} <span class="reddit-tag">${subreddit}</span></div>
               <div class="reddit-meta">
                 <span>${date}</span>
@@ -1009,7 +1027,7 @@
               </div>
             </a>`;
         })
-        .catch(fallback);
+        .catch(showFallback);
     })();
   </script>
 </body>
