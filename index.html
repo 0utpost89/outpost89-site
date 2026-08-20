@@ -76,12 +76,17 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       padding: 2rem 3rem;
       font-family: 'VT323', monospace;
       font-size: 1.2rem;
       color: var(--purple-bright);
       transition: opacity 0.8s ease;
+    }
+
+    .boot-lines {
+      display: inline-block;
+      text-align: left;
     }
 
     #boot-screen.fade-out {
@@ -641,15 +646,17 @@
 
   <!-- ==================== BOOT SCREEN ==================== -->
   <div id="boot-screen">
-    <div class="boot-line" id="b0">OUTPOST-89 SYSTEM <span class="amber">v3.2.1</span></div>
-    <div class="boot-line" id="b1"><span class="dim">></span> Initialising broadcast array............. <span class="green">OK</span></div>
-    <div class="boot-line" id="b2"><span class="dim">></span> Scanning frequencies.................... <span class="green">OK</span></div>
-    <div class="boot-line" id="b3"><span class="dim">></span> Loading project archives................. <span class="green">OK</span></div>
-    <div class="boot-line" id="b4"><span class="dim">></span> Checking signal integrity................ <span class="green">OK</span></div>
-    <div class="boot-line" id="b5"><span class="dim">></span> Operator status: <span class="amber">ACTIVE</span></div>
-    <div class="boot-line" id="b6"><span class="dim">></span> Vibe: <span class="lavender">LAID BACK</span></div>
-    <div class="boot-line" id="b7">&nbsp;</div>
-    <div class="boot-line" id="b8"><span class="amber">SIGNAL LOCKED. WELCOME TO THE OUTPOST.</span> <span class="boot-cursor"></span></div>
+    <div class="boot-lines">
+      <div class="boot-line" id="b0">OUTPOST-89 SYSTEM <span class="amber">v3.2.1</span></div>
+      <div class="boot-line" id="b1"><span class="dim">></span> Initialising broadcast array............. <span class="green">OK</span></div>
+      <div class="boot-line" id="b2"><span class="dim">></span> Scanning frequencies.................... <span class="green">OK</span></div>
+      <div class="boot-line" id="b3"><span class="dim">></span> Loading project archives................. <span class="green">OK</span></div>
+      <div class="boot-line" id="b4"><span class="dim">></span> Checking signal integrity................ <span class="green">OK</span></div>
+      <div class="boot-line" id="b5"><span class="dim">></span> Operator status: <span class="amber">ACTIVE</span></div>
+      <div class="boot-line" id="b6"><span class="dim">></span> Vibe: <span class="lavender">LAID BACK</span></div>
+      <div class="boot-line" id="b7">&nbsp;</div>
+      <div class="boot-line" id="b8"><span class="amber">SIGNAL LOCKED. WELCOME TO THE OUTPOST.</span> <span class="boot-cursor"></span></div>
+    </div>
   </div>
 
   <!-- ==================== MAIN SITE ==================== -->
