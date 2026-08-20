@@ -454,6 +454,22 @@
       font-size: 1rem;
     }
 
+    /* ==================== X ==================== */
+    #x-post { padding-bottom: 3rem; }
+
+    .x-embed-wrap {
+      border: 2px solid var(--surface-light);
+      background: var(--surface);
+      padding: 0.5rem;
+      min-height: 120px;
+    }
+
+    .x-embed-wrap a {
+      color: var(--purple-bright);
+      font-family: 'VT323', monospace;
+      font-size: 1rem;
+    }
+
     /* ==================== ABOUT ==================== */
     #about {
       padding-bottom: 4rem;
@@ -516,7 +532,7 @@
 
     .signal-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
     }
 
@@ -761,6 +777,16 @@
       </div>
     </section>
 
+    <!-- X -->
+    <section id="x-post">
+      <div class="container">
+        <div class="section-label">Latest From X</div>
+        <div class="x-embed-wrap">
+          <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" data-tweet-limit="1" href="https://twitter.com/outpost_89">Posts by @outpost_89</a>
+        </div>
+      </div>
+    </section>
+
     <!-- ABOUT -->
     <section id="about">
       <div class="container">
@@ -810,6 +836,12 @@
             <div class="signal-icon">TV</div>
             <span class="signal-name">TWITCH</span>
             <span class="signal-handle">0utpost89</span>
+          </a>
+
+          <a href="https://x.com/outpost_89" target="_blank" rel="noopener" class="signal-link reveal">
+            <div class="signal-icon">X</div>
+            <span class="signal-name">X</span>
+            <span class="signal-handle">@outpost_89</span>
           </a>
 
           <a href="mailto:outpost89yt@outlook.com" class="signal-link reveal">
@@ -932,5 +964,8 @@
         .catch(showFallback);
     })();
   </script>
+
+  <!-- X (Twitter) embedded timeline widget — loads the latest post automatically -->
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>
