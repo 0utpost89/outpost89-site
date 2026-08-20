@@ -1039,49 +1039,14 @@
       return { beep, sweep, staticBurst };
     })();
 
-    /* === BOOT SEQUENCE === */
-    (function() {
-      const lines = document.querySelectorAll('.boot-line');
-      const bootScreen = document.getElementById('boot-screen');
-      const mainSite = document.getElementById('main-site');
-      const delays = [200, 500, 900, 1300, 1700, 2100, 2400, 2800, 3200];
-
-      // Tuning-in sweep as the terminal wakes up
-      SignalAudio.sweep(180, 820, 0.5, 0.045);
-
-      lines.forEach((line, i) => {
-        setTimeout(() => {
-          line.classList.add('visible');
-          if (line.id === 'b8') {
-            // Final "signal locked" line — static burst then a confirm chime
-            SignalAudio.staticBurst(0.3, 0.04);
-            setTimeout(() => {
-              SignalAudio.beep(660, 0.09, 'square', 0.05);
-              SignalAudio.beep(990, 0.14, 'square', 0.05, 0.09);
-            }, 150);
-          } else if (line.textContent.trim() !== '') {
-            SignalAudio.beep(320 + i * 40, 0.05, 'square', 0.03);
-          }
-        }, delays[i] || (i * 400));
-      });
-
-      // Fade out boot, show site
-      setTimeout(() => {
-        bootScreen.classList.add('fade-out');
-        mainSite.classList.add('visible');
-        setTimeout(() => {
-          bootScreen.style.display = 'none';
-        }, 800);
-      }, 4500);
-    })();
-
-    /* === RANDOM SIGNAL INTERFERENCE ===
-       Occasional flicker/dropout so the site feels like it's coming in
-       over a slightly unstable radio signal: real black/white static
-       noise (drawn on a canvas) plus a couple of grey tracking lines,
-       not a colourful flash. */
-    (function() {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    /* === SIGNAL GLITCH ===
+       One shared trigger for both sound and visuals, so a glitch sound
+       never plays without its matching static/dropout — and vice versa.
+       Real black/white static noise (drawn on a canvas) plus a couple
+       of grey tracking lines, not a colourful flash. */
+    const SignalGlitch = (function() {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) return { trigger: function() {} };
 
       const canvas = document.createElement('canvas');
       canvas.id = 'glitch-static';
@@ -1116,7 +1081,7 @@
         });
       }
 
-      function triggerGlitch() {
+      function trigger() {
         randomizeTracking();
         document.body.classList.add('glitching');
         SignalAudio.staticBurst(0.3, 0.045);
@@ -1135,10 +1100,53 @@
         }, 320);
       }
 
+      return { trigger: trigger };
+    })();
+
+    /* === BOOT SEQUENCE === */
+    (function() {
+      const lines = document.querySelectorAll('.boot-line');
+      const bootScreen = document.getElementById('boot-screen');
+      const mainSite = document.getElementById('main-site');
+      const delays = [200, 500, 900, 1300, 1700, 2100, 2400, 2800, 3200];
+
+      // Tuning-in sweep as the terminal wakes up
+      SignalAudio.sweep(180, 820, 0.5, 0.045);
+
+      lines.forEach((line, i) => {
+        setTimeout(() => {
+          line.classList.add('visible');
+          if (line.id === 'b8') {
+            // Final "signal locked" line — glitch burst then a confirm chime
+            SignalGlitch.trigger();
+            setTimeout(() => {
+              SignalAudio.beep(660, 0.09, 'square', 0.05);
+              SignalAudio.beep(990, 0.14, 'square', 0.05, 0.09);
+            }, 150);
+          } else if (line.textContent.trim() !== '') {
+            SignalAudio.beep(320 + i * 40, 0.05, 'square', 0.03);
+          }
+        }, delays[i] || (i * 400));
+      });
+
+      // Fade out boot, show site
+      setTimeout(() => {
+        bootScreen.classList.add('fade-out');
+        mainSite.classList.add('visible');
+        setTimeout(() => {
+          bootScreen.style.display = 'none';
+        }, 800);
+      }, 4500);
+    })();
+
+    /* === RANDOM SIGNAL INTERFERENCE ===
+       Occasional flicker/dropout so the site feels like it's coming in
+       over a slightly unstable radio signal. */
+    (function() {
       function scheduleNext() {
         const delay = 5000 + Math.random() * 9000; // every 5-14s
         setTimeout(() => {
-          triggerGlitch();
+          SignalGlitch.trigger();
           scheduleNext();
         }, delay);
       }
