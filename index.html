@@ -50,11 +50,71 @@
         0deg,
         transparent,
         transparent 2px,
-        rgba(107, 95, 207, 0.03) 2px,
-        rgba(107, 95, 207, 0.03) 4px
+        rgba(107, 95, 207, 0.05) 2px,
+        rgba(107, 95, 207, 0.05) 4px
       );
       pointer-events: none;
       z-index: 9999;
+    }
+
+    /* === SIGNAL GLITCH SYSTEM === */
+    .glitch-bars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9600;
+      opacity: 0;
+    }
+
+    body.glitching .glitch-bars { opacity: 1; }
+
+    .glitch-bar {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      mix-blend-mode: overlay;
+      opacity: 0.55;
+    }
+
+    .glitch-bar:nth-child(1) { background: var(--purple-bright); }
+    .glitch-bar:nth-child(2) { background: var(--amber-bright); }
+    .glitch-bar:nth-child(3) { background: var(--green); }
+
+    body.glitching #main-site,
+    body.glitching #boot-screen {
+      animation: glitch-flicker 220ms steps(2, end);
+    }
+
+    @keyframes glitch-flicker {
+      0%   { opacity: 1;   filter: brightness(1) contrast(1); }
+      15%  { opacity: 0.55; filter: brightness(1.8) contrast(1.4); transform: translateX(-3px); }
+      30%  { opacity: 1;   filter: brightness(0.6); transform: translateX(2px); }
+      45%  { opacity: 0.7; filter: brightness(1.5); transform: translateX(-2px); }
+      60%  { opacity: 1;   filter: brightness(1) contrast(1.2); transform: translateX(1px); }
+      100% { opacity: 1;   filter: brightness(1) contrast(1); transform: translateX(0); }
+    }
+
+    body.glitching .hero h1,
+    body.glitching .nav-logo,
+    body.glitching .section-label {
+      animation: glitch-rgb 220ms steps(1, end);
+    }
+
+    @keyframes glitch-rgb {
+      0%, 100% { text-shadow: none; }
+      35%      { text-shadow: -3px 0 var(--red), 3px 0 var(--blue-bright); }
+      70%      { text-shadow: 3px 0 var(--green), -2px 0 var(--purple-bright); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body.glitching #main-site,
+      body.glitching #boot-screen,
+      body.glitching .hero h1,
+      body.glitching .nav-logo,
+      body.glitching .section-label {
+        animation: none !important;
+      }
+      .glitch-bars { display: none !important; }
     }
 
     /* === CRT VIGNETTE === */
@@ -883,6 +943,85 @@
 
   <!-- ==================== SCRIPTS ==================== -->
   <script>
+    /* === SIGNAL AUDIO ENGINE ===
+       All sounds are synthesised live with the Web Audio API — no audio
+       files. Browsers block audio until the visitor has interacted with
+       the page at least once, so the very first boot may play silently;
+       everything after the first click/tap has sound. */
+    const SignalAudio = (function() {
+      let ctx = null;
+      const getCtx = () => {
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return null;
+          ctx = new AC();
+        }
+        return ctx;
+      };
+
+      ['click', 'keydown', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, () => {
+          const c = getCtx();
+          if (c && c.state === 'suspended') c.resume();
+        }, { once: true, passive: true });
+      });
+
+      function beep(freq, duration, type, vol, delay) {
+        const c = getCtx();
+        if (!c || c.state !== 'running') return;
+        const t0 = c.currentTime + (delay || 0);
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = type || 'square';
+        osc.frequency.setValueAtTime(freq, t0);
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(vol || 0.05, t0 + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+        osc.connect(gain).connect(c.destination);
+        osc.start(t0);
+        osc.stop(t0 + duration + 0.02);
+      }
+
+      function sweep(f1, f2, duration, vol) {
+        const c = getCtx();
+        if (!c || c.state !== 'running') return;
+        const t0 = c.currentTime;
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f1, t0);
+        osc.frequency.exponentialRampToValueAtTime(f2, t0 + duration);
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(vol || 0.05, t0 + 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+        osc.connect(gain).connect(c.destination);
+        osc.start(t0);
+        osc.stop(t0 + duration + 0.05);
+      }
+
+      function staticBurst(duration, vol) {
+        const c = getCtx();
+        if (!c || c.state !== 'running') return;
+        duration = duration || 0.2;
+        const bufferSize = Math.max(1, Math.floor(c.sampleRate * duration));
+        const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = c.createBufferSource();
+        noise.buffer = buffer;
+        const filter = c.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1600 + Math.random() * 800;
+        const gain = c.createGain();
+        gain.gain.setValueAtTime(vol || 0.035, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+        noise.connect(filter).connect(gain).connect(c.destination);
+        noise.start();
+      }
+
+      return { beep, sweep, staticBurst };
+    })();
+
     /* === BOOT SEQUENCE === */
     (function() {
       const lines = document.querySelectorAll('.boot-line');
@@ -890,9 +1029,22 @@
       const mainSite = document.getElementById('main-site');
       const delays = [200, 500, 900, 1300, 1700, 2100, 2400, 2800, 3200];
 
+      // Tuning-in sweep as the terminal wakes up
+      SignalAudio.sweep(180, 820, 0.5, 0.045);
+
       lines.forEach((line, i) => {
         setTimeout(() => {
           line.classList.add('visible');
+          if (line.id === 'b8') {
+            // Final "signal locked" line — static burst then a confirm chime
+            SignalAudio.staticBurst(0.18, 0.03);
+            setTimeout(() => {
+              SignalAudio.beep(660, 0.09, 'square', 0.05);
+              SignalAudio.beep(990, 0.14, 'square', 0.05, 0.09);
+            }, 150);
+          } else if (line.textContent.trim() !== '') {
+            SignalAudio.beep(320 + i * 40, 0.05, 'square', 0.03);
+          }
         }, delays[i] || (i * 400));
       });
 
@@ -904,6 +1056,44 @@
           bootScreen.style.display = 'none';
         }, 800);
       }, 4500);
+    })();
+
+    /* === RANDOM SIGNAL INTERFERENCE ===
+       Occasional flicker/glitch so the site feels like it's coming in
+       over a slightly unstable radio signal. */
+    (function() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const barsWrap = document.createElement('div');
+      barsWrap.className = 'glitch-bars';
+      barsWrap.innerHTML = '<div class="glitch-bar"></div><div class="glitch-bar"></div><div class="glitch-bar"></div>';
+      document.body.appendChild(barsWrap);
+      const bars = barsWrap.querySelectorAll('.glitch-bar');
+
+      function randomizeBars() {
+        bars.forEach(b => {
+          b.style.top = (Math.random() * 100) + '%';
+          b.style.height = (2 + Math.random() * 14) + 'px';
+          b.style.transform = 'translateX(' + (Math.random() * 24 - 12) + 'px)';
+        });
+      }
+
+      function triggerGlitch() {
+        randomizeBars();
+        document.body.classList.add('glitching');
+        SignalAudio.staticBurst(0.12, 0.02);
+        setTimeout(() => document.body.classList.remove('glitching'), 230);
+      }
+
+      function scheduleNext() {
+        const delay = 5000 + Math.random() * 9000; // every 5-14s
+        setTimeout(() => {
+          triggerGlitch();
+          scheduleNext();
+        }, delay);
+      }
+
+      scheduleNext();
     })();
 
     /* === SCROLL REVEAL === */
