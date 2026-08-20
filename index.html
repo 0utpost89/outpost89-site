@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OUTPOST 89 — SIGNAL</title>
-  <meta name="description" content="Outpost 89 — web tools, dispatches, and projects from one bloke figuring it out as he goes." />
+  <meta name="description" content="Outpost 89 — web tools and projects from one bloke figuring it out as he goes." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet" />
   <style>
@@ -449,81 +449,6 @@
       font-size: 1rem;
     }
 
-    /* ==================== SUBSTACK NOTE ==================== */
-    #dispatch { padding-bottom: 3rem; }
-
-    .dispatch-card {
-      border: 2px solid var(--surface-light);
-      background: var(--surface);
-      transition: border-color 0.3s, box-shadow 0.3s;
-      display: block;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .dispatch-card:hover {
-      border-color: var(--purple-dim);
-      box-shadow: 0 0 20px var(--purple-glow);
-    }
-
-    .dispatch-img {
-      width: 100%;
-      display: block;
-      border-bottom: 2px solid var(--surface-light);
-      image-rendering: auto;
-    }
-
-    .dispatch-body {
-      padding: 1.2rem 1.5rem;
-    }
-
-    .dispatch-title {
-      font-family: 'VT323', monospace;
-      font-size: 1.3rem;
-      color: var(--text-bright);
-      margin-bottom: 0.6rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .dispatch-tag {
-      display: inline-block;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 0.35rem;
-      background: var(--amber);
-      color: var(--bg-deep);
-      padding: 3px 8px;
-      letter-spacing: 1px;
-      vertical-align: middle;
-    }
-
-    .dispatch-preview {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--text);
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .dispatch-meta {
-      margin-top: 0.8rem;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .dispatch-cta {
-      font-family: 'VT323', monospace;
-      font-size: 1rem;
-      color: var(--purple-bright);
-      letter-spacing: 1px;
-    }
-
     /* ==================== ABOUT ==================== */
     #about {
       padding-bottom: 4rem;
@@ -586,7 +511,7 @@
 
     .signal-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
     }
 
@@ -738,7 +663,6 @@
         </a>
         <ul class="nav-links">
           <li><a href="#tools">Tools</a></li>
-          <li><a href="#dispatch">Dispatch</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#signal">Signal</a></li>
         </ul>
@@ -820,35 +744,6 @@
       </div>
     </section>
 
-    <!-- SUBSTACK NOTE -->
-    <section id="dispatch">
-      <div class="container">
-        <div class="section-label">Latest Dispatch</div>
-
-        <a href="https://substack.com/@outpost89/note/c-233787618" target="_blank" rel="noopener" class="dispatch-card reveal">
-          <img
-            src="https://substack-post-media.s3.amazonaws.com/public/images/a802bb63-7e61-4e7b-be1b-c76691a8ff57_1408x768.png"
-            alt="Outpost 89 — first transmission"
-            class="dispatch-img"
-          />
-          <div class="dispatch-body">
-            <div class="dispatch-title">
-              First Transmission
-              <span class="dispatch-tag">SUBSTACK</span>
-            </div>
-            <p class="dispatch-preview">
-              Sending this out over the waves. Cracking dials. Flicking switches. Range maximised. Anyone out there? Calling out from Outpost 89. I was born in 1989. Yup &mdash; I can just about call myself an eighties child, although I don't remember much from that time. My childhood was spent in the nineties. PlayStation, Pogs, Pok&eacute;mon, and sunny days riding my bike around the street with my brother...
-            </p>
-            <div class="dispatch-meta">
-              <span>Mar 26, 2026</span>
-              <span class="dispatch-cta">READ FULL NOTE &rarr;</span>
-            </div>
-          </div>
-        </a>
-
-      </div>
-    </section>
-
     <!-- REDDIT -->
     <section id="reddit">
       <div class="container">
@@ -897,12 +792,6 @@
         <div class="section-label">Find the Signal</div>
 
         <div class="signal-grid">
-
-          <a href="https://substack.com/@outpost89" target="_blank" rel="noopener" class="signal-link reveal">
-            <div class="signal-icon">SS</div>
-            <span class="signal-name">SUBSTACK</span>
-            <span class="signal-handle">@outpost89</span>
-          </a>
 
           <a href="https://reddit.com/user/outpost89" target="_blank" rel="noopener" class="signal-link reveal">
             <div class="signal-icon">R</div>
