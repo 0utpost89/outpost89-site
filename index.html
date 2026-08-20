@@ -224,6 +224,32 @@
       height: 500px;
       background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
       pointer-events: none;
+      animation: hero-pulse 5s ease-in-out infinite;
+    }
+
+    @keyframes hero-pulse {
+      0%, 100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+      50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--surface-light) 1px, transparent 1px),
+        linear-gradient(90deg, var(--surface-light) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.12;
+      mask-image: radial-gradient(ellipse 60% 80% at 50% 20%, black 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 20%, black 30%, transparent 75%);
+      animation: hero-grid-drift 18s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes hero-grid-drift {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 48px 48px, 48px 48px; }
     }
 
     .hero-profile {
@@ -345,6 +371,7 @@
     .tool-card {
       display: block;
       border: 2px solid var(--surface-light);
+      border-left-width: 4px;
       background: var(--surface);
       padding: 1.5rem;
       text-decoration: none;
@@ -357,6 +384,22 @@
       box-shadow: 0 0 20px var(--purple-glow);
       transform: translateY(-2px);
     }
+
+    .tool-card.cat-fitness { border-left-color: var(--green); }
+    .tool-card.cat-fitness:hover { border-left-color: var(--green); box-shadow: 0 0 20px rgba(74,199,138,0.25); }
+    .tool-card.cat-fitness .tool-tag { background: var(--green); color: var(--bg-deep); }
+
+    .tool-card.cat-home { border-left-color: var(--amber); }
+    .tool-card.cat-home:hover { border-left-color: var(--amber); box-shadow: 0 0 20px var(--amber-glow); }
+    .tool-card.cat-home .tool-tag { background: var(--amber); color: var(--bg-deep); }
+
+    .tool-card.cat-aviation { border-left-color: var(--blue-bright); }
+    .tool-card.cat-aviation:hover { border-left-color: var(--blue-bright); box-shadow: 0 0 20px rgba(90,122,191,0.3); }
+    .tool-card.cat-aviation .tool-tag { background: var(--blue-bright); color: var(--bg-deep); }
+
+    .tool-card.cat-fun { border-left-color: var(--lavender); }
+    .tool-card.cat-fun:hover { border-left-color: var(--lavender); box-shadow: 0 0 20px var(--lavender-dim); }
+    .tool-card.cat-fun .tool-tag { background: var(--lavender); color: var(--bg-deep); }
 
     .tool-title {
       font-family: 'VT323', monospace;
@@ -723,25 +766,25 @@
 
         <div class="tools-grid">
 
-          <a href="https://0utpost89.github.io/eldforge" target="_blank" rel="noopener" class="tool-card reveal">
+          <a href="https://0utpost89.github.io/eldforge" target="_blank" rel="noopener" class="tool-card cat-fitness reveal">
             <div class="tool-title">Eldforge <span class="tool-tag">FITNESS</span></div>
             <p class="tool-desc">A personal workout tracker &mdash; set up the equipment you've got and it builds your exercise pool around it, plate calculator included.</p>
             <div class="tool-cta">LAUNCH TOOL &rarr;</div>
           </a>
 
-          <a href="https://aldi-shopping-list.netlify.app" target="_blank" rel="noopener" class="tool-card reveal">
+          <a href="https://aldi-shopping-list.netlify.app" target="_blank" rel="noopener" class="tool-card cat-home reveal">
             <div class="tool-title">Weekly Shop Planner <span class="tool-tag">HOME</span></div>
             <p class="tool-desc">Plan meals and household essentials across the week, then generate a single Aldi-formatted shopping list.</p>
             <div class="tool-cta">LAUNCH TOOL &rarr;</div>
           </a>
 
-          <a href="https://f34massconverter.netlify.app" target="_blank" rel="noopener" class="tool-card reveal">
+          <a href="https://f34massconverter.netlify.app" target="_blank" rel="noopener" class="tool-card cat-aviation reveal">
             <div class="tool-title">Avtur F34 FSII Calculator <span class="tool-tag">AVIATION</span></div>
             <p class="tool-desc">Converts between mass and volume for aviation fuel, with temperature density corrections to JSP 317 standards.</p>
             <div class="tool-cta">LAUNCH TOOL &rarr;</div>
           </a>
 
-          <a href="https://chucknorrismeme.netlify.app" target="_blank" rel="noopener" class="tool-card reveal">
+          <a href="https://chucknorrismeme.netlify.app" target="_blank" rel="noopener" class="tool-card cat-fun reveal">
             <div class="tool-title">Chuck Norris Facts <span class="tool-tag">JUST FOR FUN</span></div>
             <p class="tool-desc">A roundhouse-kick button that cycles through absurd, exaggerated Chuck Norris facts. No purpose. Fully committed to the bit.</p>
             <div class="tool-cta">LAUNCH TOOL &rarr;</div>
