@@ -58,63 +58,55 @@
     }
 
     /* === SIGNAL GLITCH SYSTEM === */
-    .glitch-bars {
+    #glitch-static {
       position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       z-index: 9600;
       opacity: 0;
+      mix-blend-mode: overlay;
+      image-rendering: pixelated;
     }
 
-    body.glitching .glitch-bars { opacity: 1; }
+    body.glitching #glitch-static { opacity: 0.5; }
 
-    .glitch-bar {
-      position: absolute;
+    .glitch-tracking {
+      position: fixed;
       left: 0;
       width: 100%;
+      pointer-events: none;
+      z-index: 9601;
+      background: rgba(220, 227, 239, 0.5);
+      opacity: 0;
       mix-blend-mode: overlay;
-      opacity: 0.55;
     }
 
-    .glitch-bar:nth-child(1) { background: var(--purple-bright); }
-    .glitch-bar:nth-child(2) { background: var(--amber-bright); }
-    .glitch-bar:nth-child(3) { background: var(--green); }
+    body.glitching .glitch-tracking { opacity: 1; }
 
     body.glitching #main-site,
     body.glitching #boot-screen {
-      animation: glitch-flicker 220ms steps(2, end);
+      animation: glitch-dropout 320ms steps(1, end);
     }
 
-    @keyframes glitch-flicker {
-      0%   { opacity: 1;   filter: brightness(1) contrast(1); }
-      15%  { opacity: 0.55; filter: brightness(1.8) contrast(1.4); transform: translateX(-3px); }
-      30%  { opacity: 1;   filter: brightness(0.6); transform: translateX(2px); }
-      45%  { opacity: 0.7; filter: brightness(1.5); transform: translateX(-2px); }
-      60%  { opacity: 1;   filter: brightness(1) contrast(1.2); transform: translateX(1px); }
-      100% { opacity: 1;   filter: brightness(1) contrast(1); transform: translateX(0); }
-    }
-
-    body.glitching .hero h1,
-    body.glitching .nav-logo,
-    body.glitching .section-label {
-      animation: glitch-rgb 220ms steps(1, end);
-    }
-
-    @keyframes glitch-rgb {
-      0%, 100% { text-shadow: none; }
-      35%      { text-shadow: -3px 0 var(--red), 3px 0 var(--blue-bright); }
-      70%      { text-shadow: 3px 0 var(--green), -2px 0 var(--purple-bright); }
+    @keyframes glitch-dropout {
+      0%   { opacity: 1;    filter: grayscale(0) brightness(1); }
+      12%  { opacity: 0.25; filter: grayscale(0.9) brightness(0.4); transform: translateX(-3px); }
+      24%  { opacity: 0.85; filter: grayscale(0.3) brightness(1.05); transform: translateX(2px); }
+      38%  { opacity: 0.2;  filter: grayscale(1) brightness(0.35); transform: translateX(-2px); }
+      50%  { opacity: 0.7;  filter: grayscale(0.5) brightness(0.9); transform: translateX(1px); }
+      65%  { opacity: 0.15; filter: grayscale(1) brightness(0.3); }
+      80%  { opacity: 0.9;  filter: grayscale(0.2) brightness(1); }
+      100% { opacity: 1;    filter: grayscale(0) brightness(1); transform: translateX(0); }
     }
 
     @media (prefers-reduced-motion: reduce) {
       body.glitching #main-site,
-      body.glitching #boot-screen,
-      body.glitching .hero h1,
-      body.glitching .nav-logo,
-      body.glitching .section-label {
+      body.glitching #boot-screen {
         animation: none !important;
       }
-      .glitch-bars { display: none !important; }
+      #glitch-static, .glitch-tracking { display: none !important; }
     }
 
     /* === CRT VIGNETTE === */
@@ -1002,21 +994,46 @@
       function staticBurst(duration, vol) {
         const c = getCtx();
         if (!c || c.state !== 'running') return;
-        duration = duration || 0.2;
+        duration = duration || 0.3;
+        vol = vol || 0.045;
+        const t0 = c.currentTime;
+
+        // Broadband white-noise hiss (no narrow filter — a real static hiss,
+        // not a thin whistly blip)
         const bufferSize = Math.max(1, Math.floor(c.sampleRate * duration));
         const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
         const noise = c.createBufferSource();
         noise.buffer = buffer;
-        const filter = c.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1600 + Math.random() * 800;
+
+        const highpass = c.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.value = 250;
+
         const gain = c.createGain();
-        gain.gain.setValueAtTime(vol || 0.035, c.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
-        noise.connect(filter).connect(gain).connect(c.destination);
-        noise.start();
+        gain.gain.setValueAtTime(0, t0);
+        gain.gain.linearRampToValueAtTime(vol, t0 + 0.015);
+        gain.gain.setValueAtTime(vol, t0 + duration * 0.55);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+        noise.connect(highpass).connect(gain).connect(c.destination);
+        noise.start(t0);
+
+        // A few random low crackle pops layered on top for texture
+        const popCount = 2 + Math.floor(Math.random() * 3);
+        for (let p = 0; p < popCount; p++) {
+          const popT = t0 + Math.random() * duration * 0.85;
+          const popOsc = c.createOscillator();
+          const popGain = c.createGain();
+          popOsc.type = 'square';
+          popOsc.frequency.setValueAtTime(60 + Math.random() * 150, popT);
+          popGain.gain.setValueAtTime(vol * 1.6, popT);
+          popGain.gain.exponentialRampToValueAtTime(0.0001, popT + 0.025);
+          popOsc.connect(popGain).connect(c.destination);
+          popOsc.start(popT);
+          popOsc.stop(popT + 0.03);
+        }
       }
 
       return { beep, sweep, staticBurst };
@@ -1037,7 +1054,7 @@
           line.classList.add('visible');
           if (line.id === 'b8') {
             // Final "signal locked" line — static burst then a confirm chime
-            SignalAudio.staticBurst(0.18, 0.03);
+            SignalAudio.staticBurst(0.3, 0.04);
             setTimeout(() => {
               SignalAudio.beep(660, 0.09, 'square', 0.05);
               SignalAudio.beep(990, 0.14, 'square', 0.05, 0.09);
@@ -1059,30 +1076,63 @@
     })();
 
     /* === RANDOM SIGNAL INTERFERENCE ===
-       Occasional flicker/glitch so the site feels like it's coming in
-       over a slightly unstable radio signal. */
+       Occasional flicker/dropout so the site feels like it's coming in
+       over a slightly unstable radio signal: real black/white static
+       noise (drawn on a canvas) plus a couple of grey tracking lines,
+       not a colourful flash. */
     (function() {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      const barsWrap = document.createElement('div');
-      barsWrap.className = 'glitch-bars';
-      barsWrap.innerHTML = '<div class="glitch-bar"></div><div class="glitch-bar"></div><div class="glitch-bar"></div>';
-      document.body.appendChild(barsWrap);
-      const bars = barsWrap.querySelectorAll('.glitch-bar');
+      const canvas = document.createElement('canvas');
+      canvas.id = 'glitch-static';
+      canvas.width = 160;
+      canvas.height = 90;
+      document.body.appendChild(canvas);
+      const ctx2d = canvas.getContext('2d');
 
-      function randomizeBars() {
-        bars.forEach(b => {
-          b.style.top = (Math.random() * 100) + '%';
-          b.style.height = (2 + Math.random() * 14) + 'px';
-          b.style.transform = 'translateX(' + (Math.random() * 24 - 12) + 'px)';
+      const trackingLines = [0, 1].map(() => {
+        const el = document.createElement('div');
+        el.className = 'glitch-tracking';
+        document.body.appendChild(el);
+        return el;
+      });
+
+      function drawStaticFrame() {
+        const imgData = ctx2d.createImageData(canvas.width, canvas.height);
+        for (let i = 0; i < imgData.data.length; i += 4) {
+          const shade = Math.random() * 255;
+          imgData.data[i] = shade;
+          imgData.data[i + 1] = shade;
+          imgData.data[i + 2] = shade;
+          imgData.data[i + 3] = 255;
+        }
+        ctx2d.putImageData(imgData, 0, 0);
+      }
+
+      function randomizeTracking() {
+        trackingLines.forEach(el => {
+          el.style.top = (Math.random() * 100) + '%';
+          el.style.height = (1 + Math.random() * 5) + 'px';
         });
       }
 
       function triggerGlitch() {
-        randomizeBars();
+        randomizeTracking();
         document.body.classList.add('glitching');
-        SignalAudio.staticBurst(0.12, 0.02);
-        setTimeout(() => document.body.classList.remove('glitching'), 230);
+        SignalAudio.staticBurst(0.3, 0.045);
+
+        let frames = 0;
+        const frameTimer = setInterval(() => {
+          drawStaticFrame();
+          randomizeTracking();
+          frames++;
+          if (frames > 6) clearInterval(frameTimer);
+        }, 45);
+
+        setTimeout(() => {
+          document.body.classList.remove('glitching');
+          clearInterval(frameTimer);
+        }, 320);
       }
 
       function scheduleNext() {
