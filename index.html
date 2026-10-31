@@ -786,7 +786,7 @@
 
         <h1>OUTPOST <span class="num">89</span></h1>
 
-        <div class="hero-tagline">Thoughts, ideas, tools and procrastination.</div>
+        <div class="hero-tagline">An online location for my procrastination</div>
 
         <div class="dashboard">
           <div class="dash-item">
@@ -795,11 +795,11 @@
           </div>
           <div class="dash-item">
             <span class="label">STATUS</span><br />
-            <span class="value green">BUILDING</span>
+            <span class="value green" id="status-value">WORKING</span>
           </div>
           <div class="dash-item">
-            <span class="label">VIBE</span><br />
-            <span class="value green">LAID BACK</span>
+            <span class="label">GAMES LIVE</span><br />
+            <span class="value">1</span>
           </div>
         </div>
 
@@ -1093,10 +1093,10 @@
         });
       }
 
-      function trigger() {
+      function trigger(silent) {
         randomizeTracking();
         document.body.classList.add('glitching');
-        SignalAudio.staticBurst(0.3, 0.045);
+        if (!silent) SignalAudio.staticBurst(0.3, 0.045);
 
         let frames = 0;
         const frameTimer = setInterval(() => {
@@ -1158,12 +1158,42 @@
       function scheduleNext() {
         const delay = 5000 + Math.random() * 9000; // every 5-14s
         setTimeout(() => {
-          SignalGlitch.trigger();
+          SignalGlitch.trigger(true);
           scheduleNext();
         }, delay);
       }
 
       scheduleNext();
+    })();
+
+    /* === STATUS CYCLE === */
+    (function() {
+      const el = document.getElementById('status-value');
+      if (!el) return;
+      const weekendCycle = ['WONDERING', 'THINKING', 'CREATING', 'ENERGISING', 'COFFEE STOP'];
+
+      function currentStatus(now) {
+        const day = now.getDay(); // 0 = Sun, 6 = Sat
+        const mins = now.getHours() * 60 + now.getMinutes();
+        const weekend = day === 0 || day === 6;
+
+        if (weekend) {
+          if (mins < 7 * 60 + 30) return 'RECHARGING';
+          if (mins >= 19 * 60 + 31) return 'MOVIE NIGHT';
+          if (mins >= 18 * 60 && mins < 19 * 60) return 'EATING PIZZA';
+          const slot = Math.floor((mins - (7 * 60 + 30)) / 30);
+          return weekendCycle[slot % weekendCycle.length];
+        }
+
+        if (mins < 5 * 60 + 30 || mins >= 21 * 60) return 'RECHARGING';
+        if (mins < 8 * 60) return 'BOOTING UP';
+        if (mins <= 17 * 60) return 'WORKING';
+        return 'WATCHING TV';
+      }
+
+      function update() { el.textContent = currentStatus(new Date()); }
+      update();
+      setInterval(update, 30000);
     })();
 
     /* === SCROLL REVEAL === */
